@@ -30,6 +30,13 @@ export class ImageService {
 			throw error;
 		}
 	}
+	public async deleteById(_id: string): Promise<IImage> {
+		try {
+			return await Image.findOneAndDelete({ _id });
+		} catch (error) {
+			throw error;
+		}
+	}
 	public async getPaths(imageIds: string[]): Promise<string[]> {
 		try {
 			const images = await Image.find({ _id: { $in: imageIds } });
