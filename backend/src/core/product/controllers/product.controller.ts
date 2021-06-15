@@ -8,7 +8,7 @@ import { uploadMany, uploadOne } from '../../../common/upload';
 import { IImage } from '../../image/interfaces/image.interface';
 import { imageService } from '../../image/services';
 import path from 'path';
-import { removeFilesByPath } from '../../base/tools';
+import { removeFilesByPaths } from '../../base/tools';
 
 export class ProductController {
 	public async create(req: RequestWithUser, res: Response, next: NextFunction) {
@@ -85,7 +85,7 @@ export class ProductController {
 			console.log(data);
 			const dirs = await imageService.getPaths(data.imageIds);
 			dirs.map((dir) => path.join(__dirname, '../../../../', dir));
-			removeFilesByPath(dirs);
+			removeFilesByPaths(dirs);
 			await imageService.deleteMany(data.imageIds);
 			const product = await productService.pullImage(data);
 			return res.status(200).send(product);

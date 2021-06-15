@@ -10,6 +10,7 @@ import fs from 'fs';
 import { uploadOne } from '../../../common/upload';
 import { IImage } from '../../image/interfaces/image.interface';
 import path from 'path';
+import { removeFilesByPaths } from '../../base/tools';
 
 export class AccountController {
 	public async create(req: Request, res: Response, next: NextFunction) {
@@ -68,8 +69,12 @@ export class AccountController {
 			await uploadOne(req, res);
 			let image: IImage;
 			if (req.file) {
-				const { filename: name, path } = req.file;
-				image = await imageService.create({ name, path });
+				const { filename: name, path: filePath } = req.file;
+				image = await imageService.create({ name, path: filePath });
+				const oldImage = await imageService.findById(req.user.avatarId);
+				const dir = path.join(__dirname, '../../../../', oldImage.path);
+				removeFilesByPaths(dir);
+				await imageService.deleteById(oldImage._id);
 			}
 			const account = await accountService.edit(req.user._id, {
 				fullName: req.body.fullName,
@@ -82,7 +87,8 @@ export class AccountController {
 	}
 	public async getProfile(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			return res.status(200).send({ account: req.user });
+			const image = await imageService.findById(req.user.avatarId);
+			return res.status(200).send({ ...req.user, avatarUrl: path.join(__dirname, '../../../../', image.path) });
 		} catch (error) {
 			next(error);
 		}
