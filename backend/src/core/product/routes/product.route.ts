@@ -14,6 +14,7 @@ export class ProductRoute implements IRoute {
 		this.routes.post('/', authMiddleware, productController.create);
 		this.routes.get('/type/:type', productController.findByType);
 		this.routes.get('/:id', productController.findById);
-		this.routes.post('/test', productController.addImage);
+		this.routes.patch('/add-image', productController.addImage);
+		this.routes.patch('/rm-image', productController.removeImage);
 	}
 }

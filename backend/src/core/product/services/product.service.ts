@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { ProductCreateDTO, ProductUpdateDTO } from '../dtos';
+import { EditImageDTO, ProductCreateDTO, ProductUpdateDTO } from '../dtos';
 import { IProduct } from '../interfaces';
 import { Product } from '../models';
 
@@ -54,16 +54,24 @@ export class ProductService {
 			throw error;
 		}
 	}
-	public async pushImage(_id: string, imageIds: string[]): Promise<IProduct> {
+	public async pushImage(edit: EditImageDTO): Promise<IProduct> {
 		try {
-			return await Product.findOneAndUpdate({ _id }, { $push: { images: { $each: imageIds } } }, { new: true });
+			return await Product.findOneAndUpdate(
+				{ _id: edit.productId },
+				{ $push: { images: { $each: edit.imageIds } } },
+				{ new: true }
+			);
 		} catch (error) {
 			throw error;
 		}
 	}
-	public async pullImage(_id: string, imageIds: string[]): Promise<IProduct> {
+	public async pullImage(edit: EditImageDTO): Promise<IProduct> {
 		try {
-			return await Product.findOneAndUpdate({ _id }, { $pullAll: { images: imageIds } }, { new: true });
+			return await Product.findOneAndUpdate(
+				{ _id: edit.productId },
+				{ $pullAll: { images: edit.imageIds } },
+				{ new: true }
+			);
 		} catch (error) {
 			throw error;
 		}

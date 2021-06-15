@@ -23,4 +23,21 @@ export class ImageService {
 			throw error;
 		}
 	}
+	public async deleteMany(imageIds: string[]): Promise<any> {
+		try {
+			return await Image.deleteMany({ _id: { $in: imageIds } });
+		} catch (error) {
+			throw error;
+		}
+	}
+	public async getPaths(imageIds: string[]): Promise<string[]> {
+		try {
+			const images = await Image.find({ _id: { $in: imageIds } });
+			let result: string[] = [];
+			images.forEach((image) => result.push(image.path));
+			return result;
+		} catch (error) {
+			throw error;
+		}
+	}
 }

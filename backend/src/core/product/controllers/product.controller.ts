@@ -2,11 +2,13 @@ import { ProductCategory, ProductType } from '../interfaces';
 import { Request, Response, NextFunction } from 'express';
 import { HttpException } from '../../../common/exception/http-error';
 import { productService } from '../services';
-import { ProductCreateDTO } from '../dtos';
+import { EditImageDTO, ProductCreateDTO } from '../dtos';
 import { RequestWithUser } from '../../base/interfaces';
 import { uploadMany, uploadOne } from '../../../common/upload';
 import { IImage } from '../../image/interfaces/image.interface';
 import { imageService } from '../../image/services';
+import path from 'path';
+import { removeFilesByPath } from '../../base/tools';
 
 export class ProductController {
 	public async create(req: RequestWithUser, res: Response, next: NextFunction) {
@@ -63,7 +65,30 @@ export class ProductController {
 	public async addImage(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			await uploadMany(req, res);
-			return res.status(200).send(req.files);
+			const files: any = req.files;
+			if (files.length === 0) throw new HttpException(400, 'No file found!');
+			let imageIds: string[] = [];
+			for (const file of files) {
+				const { filename: name, path } = file;
+				const image = await imageService.create({ name, path });
+				imageIds.push(image._id);
+			}
+			const product = await productService.pushImage({ productId: req.body.productId, imageIds });
+			return res.status(200).send(product);
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async removeImage(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const data: EditImageDTO = req.body;
+			console.log(data);
+			const dirs = await imageService.getPaths(data.imageIds);
+			dirs.map((dir) => path.join(__dirname, '../../../../', dir));
+			removeFilesByPath(dirs);
+			await imageService.deleteMany(data.imageIds);
+			const product = await productService.pullImage(data);
+			return res.status(200).send(product);
 		} catch (error) {
 			next(error);
 		}

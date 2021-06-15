@@ -75,7 +75,7 @@ export class AccountController {
 				fullName: req.body.fullName,
 				avatarId: image ? image._id : undefined,
 			});
-			return res.status(200).send({ account }); //
+			return res.status(200).send({ account });
 		} catch (error) {
 			next(error);
 		}
