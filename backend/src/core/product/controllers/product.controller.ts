@@ -2,13 +2,11 @@ import { ProductCategory, ProductType } from '../interfaces';
 import { Request, Response, NextFunction } from 'express';
 import { HttpException } from '../../../common/exception/http-error';
 import { productService } from '../services';
-import { EditImageDTO, ProductCreateDTO } from '../dtos';
+import { EditImageDTO, ProductCreateDTO, ProductUpdateDTO } from '../dtos';
 import { RequestWithUser } from '../../base/interfaces';
 import { uploadMany, uploadOne } from '../../../common/upload';
 import { IImage } from '../../image/interfaces/image.interface';
 import { imageService } from '../../image/services';
-import path from 'path';
-import { removeFilesByPaths } from '../../base/tools';
 
 export class ProductController {
 	public async create(req: RequestWithUser, res: Response, next: NextFunction) {
@@ -82,13 +80,40 @@ export class ProductController {
 	public async removeImage(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			const data: EditImageDTO = req.body;
-			console.log(data);
-			const dirs = await imageService.getPaths(data.imageIds);
-			dirs.map((dir) => path.join(__dirname, '../../../../', dir));
-			removeFilesByPaths(dirs);
 			await imageService.deleteMany(data.imageIds);
 			const product = await productService.pullImage(data);
 			return res.status(200).send(product);
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async deleteProduct(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const { productId } = req.body;
+			const product = await productService.findById(productId);
+			if (!product) throw new HttpException(400, 'ProductID wrong!');
+			await imageService.deleteMany(product.images);
+			await productService.deleteProduct(productId);
+			return res.status(200).send('Delete successfully!');
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async editProduct(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			// user can changer thumbnail image or delete old thumbnail or no changer
+			await uploadOne(req, res);
+			let update: ProductUpdateDTO = { ...req.body };
+			const product = await productService.findById(update.productId);
+			if (!product) throw new HttpException(400, 'ProductID wrong!');
+			if (req.file) {
+				await imageService.deleteById(product.thumbnailId);
+				const { filename: name, path } = req.file;
+				const image = await imageService.create({ name, path });
+				update.thumbnailId = image._id;
+			} else if (update.deleteThumbnail === 'true') update.thumbnailId = null;
+			const newProduct = await productService.editProduct(update.productId, update);
+			return res.status(200).send(newProduct);
 		} catch (error) {
 			next(error);
 		}
