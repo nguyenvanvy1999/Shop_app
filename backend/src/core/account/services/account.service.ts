@@ -47,4 +47,11 @@ export class AccountService {
 			throw error;
 		}
 	}
+	public async editPassword(_id: string, password: string): Promise<IAccount> {
+		try {
+			return await Account.findOneAndUpdate({ _id }, { password: hashPassword(password) }, { new: true });
+		} catch (error) {
+			throw error;
+		}
+	}
 }
