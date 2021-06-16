@@ -1,7 +1,7 @@
 import { accountService } from '../services';
 import { Request, Response, NextFunction } from 'express';
-import { AccountCreateDTO, SignInDTO } from '../dtos';
-import { comparePassword, hashPassword, signJwt } from '../tools';
+import { AccountCreateDTO, ForgetPasswordDTO, SignInDTO } from '../dtos';
+import { comparePassword, hashPassword, isMaster, signJwt } from '../tools';
 import { HttpException } from '../../../common/exception';
 import { RequestWithUser } from '../../base/interfaces';
 import { config } from '../../../common/config';
@@ -97,6 +97,17 @@ export class AccountController {
 		try {
 			const accounts = await accountService.findAll();
 			return res.status(200).send({ accounts });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async forgetPassword(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data: ForgetPasswordDTO = req.body;
+			const account = await accountService.findByUsername(data.username);
+			if (!account) throw new HttpException(400, 'Username wrong!');
+			if (!isMaster) throw new HttpException(400, 'Master password wrong!');
+			await accountService.editPassword(account._id, data.newPassword);
 		} catch (error) {
 			next(error);
 		}
