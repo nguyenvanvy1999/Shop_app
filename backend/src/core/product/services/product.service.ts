@@ -4,14 +4,13 @@ import { IProduct } from '../interfaces';
 import { Product } from '../models';
 
 export class ProductService {
-	public async create(product: ProductCreateDTO, userId: string, imageId?: string): Promise<IProduct> {
+	public async create(product: ProductCreateDTO): Promise<IProduct> {
 		try {
 			const newProduct = new Product({
 				_id: Types.ObjectId(),
 				...product,
-				thumbnailId: imageId ? imageId : null,
-				createdBy: userId,
-				updatedBy: userId,
+				createdBy: product.userId,
+				updatedBy: product.userId,
 			});
 			await newProduct.save();
 			return newProduct;
@@ -49,7 +48,7 @@ export class ProductService {
 	}
 	public async editProduct(_id: string, update: ProductUpdateDTO): Promise<IProduct> {
 		try {
-			return await Product.findOneAndUpdate({ _id }, { ...update }, { new: true });
+			return await Product.findOneAndUpdate({ _id }, { ...update, updatedBy: update.userId }, { new: true });
 		} catch (error) {
 			throw error;
 		}

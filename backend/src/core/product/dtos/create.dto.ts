@@ -1,3 +1,8 @@
 import { IProduct } from '../interfaces';
 
-export type ProductCreateDTO = Pick<IProduct, 'name' | 'ID' | 'category' | 'type' | 'price' | 'description'>;
+type Tmp = Pick<IProduct, 'name' | 'ID' | 'category' | 'type' | 'price' | 'description'>;
+
+export interface ProductCreateDTO extends Tmp {
+	userId: string;
+	thumbnailId?: string;
+}

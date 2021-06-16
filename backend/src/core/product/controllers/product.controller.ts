@@ -11,19 +11,21 @@ import { imageService } from '../../image/services';
 export class ProductController {
 	public async create(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			await uploadOne(req, res);
-			let image: IImage;
+			let product: ProductCreateDTO = req.body;
+			product.userId = req.user._id;
 			if (req.file) {
-				image = await imageService.create({ name: req.file.filename, path: req.file.path });
+				const { filename: name, path } = req.file;
+				const image = await imageService.create({ name, path });
+				product.thumbnailId = image._id;
 			}
-			const product: ProductCreateDTO = req.body;
-			const newProduct = await productService.create(product, req.user._id, image ? image._id : undefined);
+			product.thumbnailId = null;
+			const newProduct = await productService.create(product);
 			return res.status(200).send({ newProduct });
 		} catch (error) {
 			next(error);
 		}
 	}
-	public async getAll(req: Request, res: Response, next: NextFunction) {
+	public async findAll(req: Request, res: Response, next: NextFunction) {
 		try {
 			const products = await productService.findAll();
 			return res.status(200).send({ products });
@@ -102,8 +104,8 @@ export class ProductController {
 	public async editProduct(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			// user can changer thumbnail image or delete old thumbnail or no changer
-			await uploadOne(req, res);
 			let update: ProductUpdateDTO = { ...req.body };
+			update.userId = req.user._id;
 			const product = await productService.findById(update.productId);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
 			if (req.file) {
