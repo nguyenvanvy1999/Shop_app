@@ -76,4 +76,11 @@ export class ProductService {
 			throw error;
 		}
 	}
+	public async deleteProduct(_id: string): Promise<IProduct> {
+		try {
+			return await Product.findOneAndDelete({ _id });
+		} catch (error) {
+			throw error;
+		}
+	}
 }
