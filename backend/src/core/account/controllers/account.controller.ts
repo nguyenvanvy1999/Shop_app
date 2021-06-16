@@ -1,20 +1,18 @@
 import { accountService } from '../services';
 import { Request, Response, NextFunction } from 'express';
-import { AccountCreateDTO, AccountUpdateDTO, ForgetPasswordDTO, SignInDTO } from '../dtos';
+import { AccountCreateDTO, AccountUpdateDTO, ForgetPasswordDTO, SignInDTO, UpdatePasswordDTO } from '../dtos';
 import { comparePassword, hashPassword, isMaster, signJwt } from '../tools';
 import { HttpException } from '../../../common/exception';
 import { RequestWithUser } from '../../base/interfaces';
 import { config } from '../../../common/config';
 import { imageService } from '../../image/services';
 import fs from 'fs';
-import { uploadOne } from '../../../common/upload';
 import { IImage } from '../../image/interfaces/image.interface';
 import path from 'path';
 
 export class AccountController {
 	public async create(req: Request, res: Response, next: NextFunction) {
 		try {
-			await uploadOne(req, res);
 			let image: IImage;
 			if (req.file) {
 				const { filename: name, path } = req.file;
@@ -44,9 +42,9 @@ export class AccountController {
 	}
 	public async changePassword(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			const { password } = req.body;
+			const body: UpdatePasswordDTO = req.body;
 			const account = req.user;
-			account.password = hashPassword(password);
+			account.password = hashPassword(body.newPassword);
 			await account.save();
 			return res.status(200).send({ message: 'Changer successfully!' });
 		} catch (error) {
@@ -66,7 +64,6 @@ export class AccountController {
 	public async editAccount(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			// user can changer avatar, delete avatar or no changer
-			await uploadOne(req, res);
 			const { _id, avatarId } = req.user;
 			let update: AccountUpdateDTO = { ...req.body };
 			if (req.file) {
