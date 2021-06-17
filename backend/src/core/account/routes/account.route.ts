@@ -19,5 +19,8 @@ export class AccountRoute implements IRoute {
 		this.routes.get('/', authMiddleware, accountController.getProfile);
 		this.routes.get('/avatar', authMiddleware, accountController.getAvatar);
 		this.routes.get('/all', authMiddleware, accountController.getAll);
+		this.routes.post('/refresh', accountController.refreshToken);
+		this.routes.post('/logout', authMiddleware, accountController.logOut);
+		this.routes.post('/logout-all', authMiddleware, accountController.logOutAll);
 	}
 }

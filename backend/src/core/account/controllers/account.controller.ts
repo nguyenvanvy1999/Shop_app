@@ -1,4 +1,4 @@
-import { accountService } from '../services';
+import { accountService, refreshTokenService } from '../services';
 import { Request, Response, NextFunction } from 'express';
 import { AccountCreateDTO, AccountUpdateDTO, ForgetPasswordDTO, SignInDTO, UpdatePasswordDTO } from '../dtos';
 import { comparePassword, hashPassword, isMaster, signJwt } from '../tools';
@@ -9,6 +9,7 @@ import { imageService } from '../../image/services';
 import fs from 'fs';
 import { IImage } from '../../image/interfaces/image.interface';
 import path from 'path';
+import { isUUID } from 'class-validator';
 
 export class AccountController {
 	public async create(req: Request, res: Response, next: NextFunction) {
@@ -104,6 +105,36 @@ export class AccountController {
 			if (!account) throw new HttpException(400, 'Username wrong!');
 			if (!isMaster) throw new HttpException(400, 'Master password wrong!');
 			await accountService.editPassword(account._id, data.newPassword);
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async refreshToken(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { token } = req.params;
+			if (!token || !isUUID(token, 4)) throw new HttpException(400, 'Refresh token wrong');
+			const isToken = await refreshTokenService.findToken(token);
+			if (!isToken) throw new HttpException(400, 'No token found!');
+			const newToken = signJwt(isToken.accountId);
+			return res.status(200).send({ refreshToken: token, accessToken: newToken });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async logOut(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const { token } = req.params;
+			await refreshTokenService.deleteToken(token);
+			return res.status(200).send({ message: 'LogOut' });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async logOutAll(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const { _id } = req.user;
+			await refreshTokenService.deleteToken(_id);
+			return res.status(200).send({ message: 'LogOut successfully!' });
 		} catch (error) {
 			next(error);
 		}

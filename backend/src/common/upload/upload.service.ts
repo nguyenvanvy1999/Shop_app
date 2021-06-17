@@ -21,8 +21,8 @@ export class MulterConfig {
 		destination(req: Request, file: Express.Multer.File, cb: any): string | void {
 			try {
 				let dir: string;
-				const folder = req.baseUrl.split('/')[1]; //FIXME:
-				folder === 'account' ? (dir = `./uploads/account`) : (dir = `./uploads/products/${req.body.name}`);
+				const folder = req.baseUrl.split('/')[1];
+				folder === 'account' ? (dir = `./uploads/account`) : (dir = `./uploads/products/${req.body.name}`); //FIXME:
 				fs.mkdirSync(dir, { recursive: true });
 				return cb(null, dir);
 			} catch (error) {
