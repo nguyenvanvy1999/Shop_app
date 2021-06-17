@@ -39,13 +39,6 @@ export class ProductService {
 			throw error;
 		}
 	}
-	public async findByType(type: string): Promise<IProduct[]> {
-		try {
-			return await Product.find({ type }).lean();
-		} catch (error) {
-			throw error;
-		}
-	}
 	public async editProduct(_id: string, update: ProductUpdateDTO): Promise<IProduct> {
 		try {
 			return await Product.findOneAndUpdate({ _id }, { ...update, updatedBy: update.userId }, { new: true });
@@ -81,5 +74,11 @@ export class ProductService {
 		} catch (error) {
 			throw error;
 		}
+	}
+	public async checkProduct(category: string): Promise<boolean> {
+		try {
+			const product = await Product.findOne({ category });
+			return product ? true : false;
+		} catch (error) {}
 	}
 }
