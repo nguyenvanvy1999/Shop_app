@@ -13,7 +13,7 @@ export const AccountCreateVAL = celebrate({
 			.minOfNumeric(1)
 			.required(),
 		confirmPassword: Joi.any().valid(Joi.ref('password')).required(),
-		masterPassword: Joi.string().required(),
+		masterPassword: Joi.any(),
 		fullName: Joi.string().required(),
 	}),
 });

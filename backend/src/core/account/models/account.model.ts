@@ -8,8 +8,8 @@ export const AccountSchema: Schema = new Schema(
 		_id: Types.ObjectId,
 		username: { type: String, require: true, unique: true, minLength: 5, maxLength: 30, immutable: true },
 		fullName: { type: String, default: '' },
+		role: { type: Number, default: 0 },
 		password: { type: String, require: true, minLength: 5 },
-		avatarId: { type: Types.ObjectId, ref: 'Image' },
 	},
 	schemaOption
 );

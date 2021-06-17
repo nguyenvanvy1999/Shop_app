@@ -5,13 +5,13 @@ import { AccountCreateDTO, AccountUpdateDTO } from '../dtos';
 import { hashPassword } from '../tools';
 
 export class AccountService {
-	public async create(account: AccountCreateDTO, imageId?: string): Promise<IAccount> {
+	public async create(account: AccountCreateDTO, admin?: boolean): Promise<IAccount> {
 		try {
 			const newAccount = new Account({
 				_id: Types.ObjectId(),
 				...account,
-				avatarId: imageId ? imageId : null,
 				password: hashPassword(account.password),
+				role: admin ? 1 : 0,
 			});
 			await newAccount.save();
 			return newAccount;
