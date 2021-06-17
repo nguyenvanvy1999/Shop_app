@@ -1,8 +1,7 @@
 import { IProduct } from '../interfaces';
 
-type Tmp = Pick<IProduct, 'name' | 'ID' | 'category' | 'type' | 'price' | 'description'>;
+type Tmp = Pick<IProduct, 'name' | 'ID' | 'category' | 'price' | 'description' | 'images'>;
 
 export interface ProductCreateDTO extends Tmp {
 	userId: string;
-	thumbnailId?: string;
 }

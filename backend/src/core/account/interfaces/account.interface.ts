@@ -6,5 +6,5 @@ export interface IAccount extends IBase, Document {
 	username: string;
 	password: string;
 	fullName: string;
-	avatarId?: string;
+	role: number;
 }

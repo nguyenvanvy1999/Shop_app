@@ -5,10 +5,9 @@ export interface IProduct extends IBase, Document {
 	_id: string;
 	name: string;
 	ID: string;
-	type: string;
+	content: string;
 	category: string;
 	price: number;
 	description: string;
-	thumbnailId?: string;
-	images?: [string];
+	images: [string];
 }
