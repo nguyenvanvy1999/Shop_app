@@ -64,6 +64,9 @@ class ConfigService {
 	get secret(): string {
 		return this.get('secret');
 	}
+	get rootPath(): string {
+		return this.get('root_path');
+	}
 }
 
 export const config = new ConfigService('.env');
