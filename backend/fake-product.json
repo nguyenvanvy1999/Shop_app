@@ -1,0 +1,62 @@
+[
+	{
+		"_id": {
+			"$oid": "60cc1d76ee81493ac0dc3fe8"
+		},
+		"name": "Ao01",
+		"ID": "01",
+		"title": "this is ao 01",
+		"category": {
+			"$oid": "60cc1936bd5e3255700ed14c"
+		},
+		"price": 20,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	},
+	{
+		"_id": {
+			"$oid": "60cc1d76ee81493ac0dc3fe9"
+		},
+		"name": "Ao02",
+		"ID": "02",
+		"title": "this is ao 01",
+		"category": {
+			"$oid": "60cc1936bd5e3255700ed14c"
+		},
+		"price": 10,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	},
+	{
+		"_id": {
+			"$oid": "60cc1d76ee81493ac0dc3fea"
+		},
+		"name": "Quan01",
+		"ID": "03",
+		"title": "this is quan 01",
+		"category": {
+			"$oid": "60cc1942bd5e3255700ed14d"
+		},
+		"price": 30,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	},
+	{
+		"_id": {
+			"$oid": "60cc1d76ee81493ac0dc3feb"
+		},
+		"name": "Quan 02",
+		"ID": "04",
+		"title": "this is quan 01",
+		"category": {
+			"$oid": "60cc1942bd5e3255700ed14d"
+		},
+		"price": 40,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	}
+]

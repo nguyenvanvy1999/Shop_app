@@ -26,8 +26,10 @@ export const authMiddleware = async (req: RequestWithUser, res: Response, next: 
 function extractToken(req: Request): any {
 	if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
 		return req.headers.authorization.split(' ')[1];
-	} else if (req.query?.token) {
+	} else if (req.query.token) {
 		return req.query.token;
-	}
+	} else if (req.headers.Authorization) return req.headers.Authorization;
+	else if (req.header('Authorization')) return req.header('Authorization');
+	else if (req.headers.cookie) return req.headers.cookie;
 	return null;
 }

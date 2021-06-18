@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { IRoute } from '../../../common/interfaces';
 import { accountController } from '../controllers';
 import { authMiddleware } from '../middlewares';
-import { AccountCreateVAL, AccountUpdateVAL, SignInVAL, UpdatePasswordVAL } from '../validators';
+import { AccountCreateVAL, SignInVAL } from '../validators';
 
 export class AccountRoute implements IRoute {
 	public path = '/account';
@@ -13,9 +13,8 @@ export class AccountRoute implements IRoute {
 	private initializeRoutes() {
 		this.routes.post('/', AccountCreateVAL, accountController.create);
 		this.routes.post('/signin', SignInVAL, accountController.singIn);
-		this.routes.patch('/password', authMiddleware, UpdatePasswordVAL, accountController.changePassword);
 		this.routes.get('/', authMiddleware, accountController.getProfile);
-		this.routes.get('/refresh_token', accountController.refreshToken);
+		this.routes.get('/refresh_token', authMiddleware, accountController.refreshToken);
 		this.routes.post('/logout', authMiddleware, accountController.logOut);
 	}
 }
