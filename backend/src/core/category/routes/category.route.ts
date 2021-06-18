@@ -10,8 +10,11 @@ export class CategoryRoute implements IRoute {
 		this.initializeRoutes();
 	}
 	private initializeRoutes() {
-		this.routes.use(authMiddleware, authRole);
-		this.routes.route('/').get(categoryController.get).post(categoryController.create);
-		this.routes.route('/:id').delete(categoryController.delete).put(categoryController.updateCategory);
+		this.routes.route('/').get(categoryController.get).post(authMiddleware, authRole, categoryController.create);
+		this.routes
+			.route('/:id')
+			.all(authMiddleware, authRole)
+			.delete(categoryController.delete)
+			.put(categoryController.updateCategory);
 	}
 }
