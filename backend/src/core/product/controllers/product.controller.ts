@@ -108,10 +108,7 @@ export class ProductController {
 	public async getAll(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			const features = new APIQuery(Product.find(), req.query).filtering().sorting().paginating();
-
 			const products = await features.query;
-			console.log(products);
-
 			return res.status(200).json({
 				status: 'success',
 				result: products.length,
