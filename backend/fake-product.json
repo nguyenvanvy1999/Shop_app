@@ -1,0 +1,42 @@
+{
+	"product1": {
+		"name": "Ao01",
+		"ID": "01",
+		"title": "this is ao 01",
+		"category": "60cc1936bd5e3255700ed14c",
+		"price": 10,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	},
+	"product2": {
+		"name": "Ao02",
+		"ID": "02",
+		"title": "this is ao 01",
+		"category": "60cc1936bd5e3255700ed14c",
+		"price": 10,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	},
+	"product3": {
+		"name": "Quan01",
+		"ID": "03",
+		"title": "this is quan 01",
+		"category": "60cc1936bd5e3255700ed14c",
+		"price": 10,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	},
+	"product4": {
+		"name": "Quan 02",
+		"ID": "04",
+		"title": "this is quan 01",
+		"category": "60cc1942bd5e3255700ed14d",
+		"price": 10,
+		"description": "description",
+		"content": "content",
+		"images": ["test1", "test2"]
+	}
+}
