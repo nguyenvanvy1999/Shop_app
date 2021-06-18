@@ -16,7 +16,7 @@ function UserAPI(token) {
 					setIsLogged(true);
 					res.data.role === 1 ? setIsAdmin(true) : setIsAdmin(false);
 				} catch (err) {
-					alert(err.response.data.msg);
+					alert(err.response.data.message);
 				}
 			};
 			getUser();

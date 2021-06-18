@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { url } from '../../../const';
+import Cookie from 'js-cookie';
 
 function Login() {
 	const [user, setUser] = useState({
 		username: '',
 		password: '',
 	});
-
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
 		setUser({ ...user, [name]: value });
@@ -19,9 +19,10 @@ function Login() {
 		try {
 			await axios.post(`${url}/account/signin`, { ...user });
 			localStorage.setItem('firstLogin', true);
+			// alert(Cookie.get('refreshtoken'));
 			window.location.href = '/';
 		} catch (err) {
-			alert(err.response.data.msg);
+			alert(err.response.data.message);
 		}
 	};
 
