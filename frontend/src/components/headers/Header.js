@@ -5,6 +5,7 @@ import Close from './icon/close.svg';
 import Cart from './icon/cart.svg';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { url } from '../../const';
 
 function Header() {
 	const state = useContext(GlobalState);
@@ -14,7 +15,7 @@ function Header() {
 	const [menu, setMenu] = useState(false);
 
 	const logoutUser = async () => {
-		await axios.get('/user/logout');
+		await axios.get(`${url}/account/logout`);
 
 		localStorage.removeItem('firstLogin');
 
@@ -61,7 +62,7 @@ function Header() {
 
 			<div className="logo">
 				<h1>
-					<Link to="/">{isAdmin ? 'Admin' : 'DevAT Shop'}</Link>
+					<Link to="/">{isAdmin ? 'Admin' : 'TestShop'}</Link>
 				</h1>
 			</div>
 
