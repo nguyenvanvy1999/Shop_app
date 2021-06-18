@@ -1,7 +1,7 @@
 import { accountService, refreshTokenService } from '../services';
 import { Request, Response, NextFunction } from 'express';
 import { AccountCreateDTO, AccountUpdateDTO, ForgetPasswordDTO, SignInDTO, UpdatePasswordDTO } from '../dtos';
-import { comparePassword, hashPassword, isMaster, signJwt } from '../tools';
+import { comparePassword, hashPassword, isMaster, signJwt, signRefreshJwt, verifyJwt } from '../tools';
 import { HttpException } from '../../../common/exception';
 import { RequestWithUser } from '../../base/interfaces';
 import { config } from '../../../common/config';
@@ -17,7 +17,14 @@ export class AccountController {
 			account.masterPassword ? (isAdmin = false) : (isAdmin = true);
 			isAdmin = comparePassword(account.masterPassword, config.get('master_password'));
 			const newAccount = await accountService.create(account, isAdmin);
-			return res.status(201).send(newAccount);
+			const accesstoken = signJwt(newAccount._id);
+			const refreshtoken = signRefreshJwt(newAccount._id);
+			res.cookie('refreshtoken', refreshtoken, {
+				httpOnly: true,
+				path: '/account/refresh_token',
+				maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+			});
+			return res.json({ accesstoken });
 		} catch (error) {
 			next(error);
 		}
@@ -31,12 +38,12 @@ export class AccountController {
 			if (!isPassword) throw new HttpException(400, 'Password wrong!');
 			const token = signJwt(isAccount._id);
 			const refreshToken = await refreshTokenService.createToken(isAccount._id);
-			res.cookie('refreshToken', refreshToken, {
+			res.cookie('refreshtoken', refreshToken, {
 				httpOnly: true,
-				path: '/account/refresh',
+				path: '/account/refresh_token',
 				maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
 			});
-			return res.status(200).json({ accessToken: token });
+			return res.status(200).json({ accesstoken: token });
 		} catch (error) {
 			next(error);
 		}
@@ -91,12 +98,11 @@ export class AccountController {
 	}
 	public async refreshToken(req: Request, res: Response, next: NextFunction) {
 		try {
-			const token = req.cookies.refreshToken;
-			if (!token || !isUUID(token, 4)) throw new HttpException(400, 'Refresh token wrong');
-			const isToken = await refreshTokenService.findToken(token);
-			if (!isToken) throw new HttpException(400, 'No token found!');
-			const accessToken = signJwt(isToken.accountId);
-			return res.status(200).json({ accessToken });
+			const token = req.cookies.refreshtoken;
+			if (!token) return res.status(400).json({ msg: 'Please Login or Register' });
+			const decoded = verifyJwt(token);
+			const accesstoken = signJwt(decoded.id);
+			return res.status(200).json({ accesstoken });
 		} catch (error) {
 			next(error);
 		}
@@ -105,7 +111,7 @@ export class AccountController {
 		try {
 			const { token } = req.params;
 			await refreshTokenService.deleteToken(token);
-			res.clearCookie('refreshToken', { path: '/account/refresh' });
+			res.clearCookie('refreshtoken', { path: '/user/refresh_token' });
 			return res.status(200).json({ message: 'LogOut successfully!' });
 		} catch (error) {
 			next(error);

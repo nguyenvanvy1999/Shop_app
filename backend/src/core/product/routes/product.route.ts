@@ -13,10 +13,18 @@ export class ProductRoute implements IRoute {
 		this.initializeRoutes();
 	}
 	private initializeRoutes() {
-		this.routes.post('/', authMiddleware, uploadOne, ProductCreateVAL, productController.create);
-		this.routes.post('/upload', authMiddleware, authRole, productController.upload);
-		this.routes.patch('/add-image', authMiddleware, productController.addImage);
-		this.routes.patch('/rm-image', authMiddleware, RemoveImagesVAL, productController.removeImage);
-		this.routes.patch('/', authMiddleware, uploadOne, ProductUpdateVAL, productController.editProduct);
+		this.routes
+			.route('/')
+			.get(productController.getAll)
+			.post(authMiddleware, uploadOne, ProductCreateVAL, productController.create);
+		this.routes
+			.route('/:id')
+			.all(authMiddleware, authRole)
+			.put(productController.editProduct)
+			.delete(productController.deleteProduct);
+		// this.routes.post('/upload', authMiddleware, authRole, productController.upload);
+		// this.routes.patch('/add-image', authMiddleware, productController.addImage);
+		// this.routes.patch('/rm-image', authMiddleware, RemoveImagesVAL, productController.removeImage);
+		// this.routes.patch('/', authMiddleware, uploadOne, ProductUpdateVAL, productController.editProduct);
 	}
 }

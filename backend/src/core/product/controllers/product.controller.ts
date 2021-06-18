@@ -69,6 +69,18 @@ export class ProductController {
 			next(error);
 		}
 	}
+	public async getAll(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const products = await productService.findAll();
+			return res.status(200).json({
+				status: 'success',
+				result: products.length,
+				products: products,
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 	public async upload(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			await uploadMany(req, res);
