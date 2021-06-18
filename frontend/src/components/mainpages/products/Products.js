@@ -5,6 +5,7 @@ import Loading from '../utils/loading/Loading';
 import axios from 'axios';
 import Filters from './Filters';
 import LoadMore from './LoadMore';
+import { url } from '../../../const';
 
 function Products() {
 	const state = useContext(GlobalState);
@@ -22,21 +23,12 @@ function Products() {
 		setProducts([...products]);
 	};
 
-	const deleteProduct = async (id, public_id) => {
+	const deleteProduct = async (id) => {
 		try {
 			setLoading(true);
-			const destroyImg = axios.post(
-				'/api/destroy',
-				{ public_id },
-				{
-					headers: { Authorization: token },
-				}
-			);
-			const deleteProduct = axios.delete(`/api/products/${id}`, {
+			const deleteProduct = axios.delete(`${url}/product/${id}`, {
 				headers: { Authorization: token },
 			});
-
-			await destroyImg;
 			await deleteProduct;
 			setCallback(!callback);
 			setLoading(false);
@@ -55,7 +47,7 @@ function Products() {
 
 	const deleteAll = () => {
 		products.forEach((product) => {
-			if (product.checked) deleteProduct(product._id, product.images.public_id);
+			if (product.checked) deleteProduct(product._id);
 		});
 	};
 
