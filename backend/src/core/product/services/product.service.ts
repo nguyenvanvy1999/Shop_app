@@ -46,24 +46,9 @@ export class ProductService {
 			throw error;
 		}
 	}
-	public async pushImage(edit: EditImageDTO): Promise<IProduct> {
+	public async updateImage(edit: EditImageDTO): Promise<IProduct> {
 		try {
-			return await Product.findOneAndUpdate(
-				{ _id: edit.productId },
-				{ $push: { images: { $each: edit.imageIds } } },
-				{ new: true }
-			);
-		} catch (error) {
-			throw error;
-		}
-	}
-	public async pullImage(edit: EditImageDTO): Promise<IProduct> {
-		try {
-			return await Product.findOneAndUpdate(
-				{ _id: edit.productId },
-				{ $pullAll: { images: edit.imageIds } },
-				{ new: true }
-			);
+			return await Product.findOneAndUpdate({ _id: edit.productId }, { image: edit.imageId }, { new: true });
 		} catch (error) {
 			throw error;
 		}

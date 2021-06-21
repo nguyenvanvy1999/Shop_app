@@ -8,6 +8,6 @@ export const ProductCreateVAL = celebrate({
 		price: Joi.number().min(0).required(),
 		description: Joi.string().required(),
 		content: Joi.string().required(),
-		images: Joi.any(),
+		image: Joi.any(),
 	}),
 });
