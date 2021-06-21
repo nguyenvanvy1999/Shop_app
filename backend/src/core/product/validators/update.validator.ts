@@ -3,7 +3,6 @@ import { joiOID } from '../../../common/validators';
 
 export const ProductUpdateVAL = celebrate({
 	[Segments.BODY]: Joi.object().keys({
-		productId: joiOID.objectId().required(),
 		title: Joi.string(),
 		ID: Joi.string(),
 		category: Joi.string(),
@@ -11,5 +10,8 @@ export const ProductUpdateVAL = celebrate({
 		description: Joi.string(),
 		content: Joi.string(),
 		image: Joi.any(),
+	}),
+	[Segments.PARAMS]: Joi.object().keys({
+		id: joiOID.objectId().required(),
 	}),
 });

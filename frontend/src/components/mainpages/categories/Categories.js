@@ -23,22 +23,22 @@ function Categories() {
 						headers: { Authorization: token },
 					}
 				);
-				alert(res.data.msg);
+				alert(res.data.message);
 			} else {
 				const res = await axios.post(
-					'/api/category',
+					`${url}/category`,
 					{ name: category },
 					{
 						headers: { Authorization: token },
 					}
 				);
-				alert(res.data.msg);
+				alert(res.data.message);
 			}
 			setOnEdit(false);
 			setCategory('');
 			setCallback(!callback);
 		} catch (err) {
-			alert(err.response.data.msg);
+			alert(err.response.data.message);
 		}
 	};
 
@@ -53,10 +53,10 @@ function Categories() {
 			const res = await axios.delete(`${url}/category/${id}`, {
 				headers: { Authorization: token },
 			});
-			alert(res.data.msg);
+			alert(res.data.message);
 			setCallback(!callback);
 		} catch (err) {
-			alert(err.response.data.msg);
+			alert(err.response.data.message);
 		}
 	};
 

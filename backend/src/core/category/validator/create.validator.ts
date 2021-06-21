@@ -1,7 +1,7 @@
 import { celebrate, Segments, Joi } from 'celebrate';
 
-export const AccountUpdateVAL = celebrate({
+export const CategoryCreateVAL = celebrate({
 	[Segments.BODY]: Joi.object().keys({
-		fullName: Joi.string().required(),
+		name: Joi.string().required(),
 	}),
 });
