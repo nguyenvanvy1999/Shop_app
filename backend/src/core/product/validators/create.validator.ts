@@ -2,10 +2,12 @@ import { celebrate, Joi, Segments } from 'celebrate';
 
 export const ProductCreateVAL = celebrate({
 	[Segments.BODY]: Joi.object().keys({
-		name: Joi.string().required(),
+		title: Joi.string().required(),
 		ID: Joi.string().required(),
 		category: Joi.string().required(),
 		price: Joi.number().min(0).required(),
 		description: Joi.string().required(),
+		content: Joi.string().required(),
+		images: Joi.any(),
 	}),
 });

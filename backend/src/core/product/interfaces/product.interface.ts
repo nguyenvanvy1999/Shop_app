@@ -3,7 +3,7 @@ import { IBase } from '../../base/interfaces';
 
 export interface IProduct extends IBase, Document {
 	_id: string;
-	name: string;
+	title: string;
 	ID: string;
 	content: string;
 	category: string;

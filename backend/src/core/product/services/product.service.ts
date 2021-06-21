@@ -27,7 +27,7 @@ export class ProductService {
 	}
 	public async findAll(): Promise<IProduct[]> {
 		try {
-			return await Product.find({}).lean();
+			return await Product.find().populate('images').exec();
 		} catch (error) {
 			throw error;
 		}
@@ -79,6 +79,8 @@ export class ProductService {
 		try {
 			const product = await Product.findOne({ category });
 			return product ? true : false;
-		} catch (error) {}
+		} catch (error) {
+			throw error;
+		}
 	}
 }

@@ -19,12 +19,9 @@ export class ProductRoute implements IRoute {
 			.post(authMiddleware, uploadOne, ProductCreateVAL, productController.create);
 		this.routes
 			.route('/:id')
-			.all(authMiddleware, authRole)
-			.put(productController.editProduct)
-			.delete(productController.deleteProduct);
-		// this.routes.post('/upload', authMiddleware, authRole, productController.upload);
-		// this.routes.patch('/add-image', authMiddleware, productController.addImage);
-		// this.routes.patch('/rm-image', authMiddleware, RemoveImagesVAL, productController.removeImage);
-		// this.routes.patch('/', authMiddleware, uploadOne, ProductUpdateVAL, productController.editProduct);
+			.put(authMiddleware, authRole, productController.editProduct)
+			.delete(authMiddleware, authRole, productController.deleteProduct);
+		this.routes.post('/upload', authMiddleware, authRole, productController.upload);
+		this.routes.post('/destroy', authMiddleware, authRole, productController.destroy);
 	}
 }

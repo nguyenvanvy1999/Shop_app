@@ -44,6 +44,7 @@ export class App {
 		}
 		this.app.use(helmet());
 		this.app.use(express.static(path.join(__dirname, '../public')));
+		this.app.use(express.static(path.join(__dirname, '../uploads')));
 		this.app.use(serveFavicon(path.join(__dirname, '../public/favicon.ico')));
 		this.app.use(helmet());
 		this.app.use(express.json());
