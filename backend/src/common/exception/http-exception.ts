@@ -5,7 +5,6 @@ import { ErrorRes } from './interfaces';
 
 const handlerError = (error: HttpException, req: Request, res: Response, next: NextFunction) => {
 	try {
-		console.log(error);
 		const name: string = error.name || 'Internal Server Error';
 		const status: number = error.status || 500;
 		const message: string = error.message || 'Sorry! Something went wrong';
