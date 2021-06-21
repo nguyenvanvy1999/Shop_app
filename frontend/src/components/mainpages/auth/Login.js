@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { url } from '../../../const';
-import Cookie from 'js-cookie';
 
 function Login() {
 	const [user, setUser] = useState({
@@ -17,9 +16,10 @@ function Login() {
 	const loginSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			await axios.post(`${url}/account/signin`, { ...user });
+			const req = await axios.post(`${url}/account/signin`, { ...user });
+			localStorage.setItem('accessToken', req.data.accessToken);
+			localStorage.setItem('refreshToken', req.data.refreshToken);
 			localStorage.setItem('firstLogin', true);
-			// alert(Cookie.get('refreshtoken'));
 			window.location.href = '/';
 		} catch (err) {
 			alert(err.response.data.message);
