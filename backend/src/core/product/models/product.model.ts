@@ -6,14 +6,13 @@ interface IProductModel extends Model<IProduct> {}
 const ProductSchema: Schema = new Schema(
 	{
 		_id: Types.ObjectId,
-		name: { type: String, require: true, default: '' },
 		ID: { type: String, require: true, default: '', unique: true },
 		title: { type: String, require: true, default: '' },
 		category: { type: Types.ObjectId, ref: 'Category' },
 		price: { type: Number, require: true, default: 0 },
 		description: { type: String, require: true, default: '' },
 		content: { type: String, default: '' },
-		images: { type: [Types.ObjectId], ref: 'Image' },
+		images: [{ type: Types.ObjectId, ref: 'Image' }],
 		createdBy: { type: Types.ObjectId, ref: 'Account', default: null },
 		updatedBy: { type: Types.ObjectId, ref: 'Account', default: null },
 	},
