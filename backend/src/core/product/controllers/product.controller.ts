@@ -3,7 +3,7 @@ import { HttpException } from '../../../common/exception/http-error';
 import { productService } from '../services';
 import { EditImageDTO, ProductCreateDTO, ProductUpdateDTO } from '../dtos';
 import { RequestWithUser } from '../../base/interfaces';
-import { uploadMany } from '../../../common/upload';
+import { uploadMany, uploadOne } from '../../../common/upload';
 import { imageService } from '../../image/services';
 import { removeFilesError } from '../../base/tools';
 import { Product } from '../models';
@@ -83,11 +83,12 @@ export class ProductController {
 	}
 	public async deleteProduct(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			const { productId } = req.params;
-			const product = await productService.findById(productId);
+			const { id } = req.params;
+			console.log(id);
+			const product = await productService.findById(id);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
 			await imageService.deleteMany(product.images);
-			await productService.deleteProduct(productId);
+			await productService.deleteProduct(id);
 			return res.status(200).send('Delete successfully!');
 		} catch (error) {
 			next(error);
@@ -107,7 +108,7 @@ export class ProductController {
 	}
 	public async getAll(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			const features = new APIQuery(Product.find(), req.query).filtering().sorting().paginating();
+			const features = new APIQuery(Product.find().populate('images'), req.query).filtering().sorting().paginating();
 			const products = await features.query;
 			return res.status(200).json({
 				status: 'success',
@@ -120,18 +121,20 @@ export class ProductController {
 	}
 	public async upload(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			await uploadMany(req, res);
-			const files: any = req.files;
-			if (files.length === 0) throw new HttpException(400, 'No file found!');
-			let imageIds: string[] = [];
-			for (const file of files) {
-				const { filename: name, path } = file;
-				const image = await imageService.create({ name, path });
-				imageIds.push(image._id);
-			}
-			return res.status(200).json({ images: imageIds });
+			await uploadOne(req, res);
+			const { filename: name, path } = req.file;
+			const image = await imageService.create({ name, path });
+			return res.status(200).json(image);
 		} catch (error) {
 			removeFilesError(req.files);
+			next(error);
+		}
+	}
+	public async destroy(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			await imageService.deleteById(req.body.imageId);
+			return res.status(200).json({ message: 'OK' });
+		} catch (error) {
 			next(error);
 		}
 	}
