@@ -10,5 +10,6 @@ export const ProductUpdateVAL = celebrate({
 		price: Joi.number().min(0),
 		description: Joi.string(),
 		content: Joi.string(),
+		image: Joi.any(),
 	}),
 });
