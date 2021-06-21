@@ -15,6 +15,5 @@ export class AccountRoute implements IRoute {
 		this.routes.post('/signin', SignInVAL, accountController.singIn);
 		this.routes.get('/', authMiddleware, accountController.getProfile);
 		this.routes.get('/refresh_token', authMiddleware, accountController.refreshToken);
-		this.routes.post('/logout', authMiddleware, accountController.logOut);
 	}
 }
