@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { url } from '../../../const';
 import { GlobalState } from '../../../GlobalState';
 import ProductItem from '../utils/productItem/ProductItem';
 
@@ -22,11 +23,11 @@ function DetailProduct() {
 	return (
 		<>
 			<div className="detail">
-				<img src={detailProduct.images.url} alt="" />
+				<img src={`${url}/${detailProduct.image.path}`.replace('uploads', '')} alt="" />
 				<div className="box-detail">
 					<div className="row">
 						<h2>{detailProduct.title}</h2>
-						<h6>#id: {detailProduct.ID}</h6>
+						<h6>ID:{detailProduct.ID}</h6>
 					</div>
 					<span>$ {detailProduct.price}</span>
 					<p>{detailProduct.description}</p>

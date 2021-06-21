@@ -6,7 +6,7 @@ function ProductItem({ product, isAdmin, deleteProduct, handleCheck }) {
 	return (
 		<div className="product_card">
 			{isAdmin && <input type="checkbox" checked={product.checked} onChange={() => handleCheck(product._id)} />}
-			<img src={`${url}/${product.images[0].path}`.replace('uploads', '')} alt="" />
+			<img src={`${url}/${product.image.path}`.replace('uploads', '')} alt="" />
 			<div className="product_box">
 				<h2 title={product.title}>{product.title}</h2>
 				<span>${product.price}</span>
