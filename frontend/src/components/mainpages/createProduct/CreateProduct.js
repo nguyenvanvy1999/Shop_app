@@ -18,7 +18,7 @@ function CreateProduct() {
 	const state = useContext(GlobalState);
 	const [product, setProduct] = useState(initialState);
 	const [categories] = state.categoriesAPI.categories;
-	const [images, setImages] = useState(false);
+	const [image, setImage] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	const [isAdmin] = state.userAPI.isAdmin;
@@ -37,13 +37,13 @@ function CreateProduct() {
 			products.forEach((product) => {
 				if (product._id === param.id) {
 					setProduct(product);
-					setImages(product.images);
+					setImage(product.image);
 				}
 			});
 		} else {
 			setOnEdit(false);
 			setProduct(initialState);
-			setImages(false);
+			setImage(false);
 		}
 	}, [param.id, products]);
 
@@ -71,7 +71,7 @@ function CreateProduct() {
 				headers: { 'content-type': 'multipart/form-data', Authorization: token },
 			});
 			setLoading(false);
-			setImages(res.data);
+			setImage(res.data);
 		} catch (err) {
 			alert(err.response.data.message);
 		}
@@ -83,13 +83,13 @@ function CreateProduct() {
 			setLoading(true);
 			await axios.post(
 				`${url}/product/destroy`,
-				{ imageId: images._id },
+				{ imageId: image._id },
 				{
 					headers: { Authorization: token },
 				}
 			);
 			setLoading(false);
-			setImages(false);
+			setImage(false);
 		} catch (err) {
 			alert(err.response.data.message);
 		}
@@ -104,12 +104,12 @@ function CreateProduct() {
 		e.preventDefault();
 		try {
 			if (!isAdmin) return alert("You're not an admin");
-			if (!images) return alert('No Image Upload');
+			if (!image) return alert('No Image Upload');
 
 			if (onEdit) {
 				await axios.put(
 					`${url}/product/${product._id}`,
-					{ ...product, images: images._id },
+					{ ...product, image: image._id },
 					{
 						headers: { Authorization: token },
 					}
@@ -117,7 +117,7 @@ function CreateProduct() {
 			} else {
 				await axios.post(
 					`${url}/product`,
-					{ ...product, images: images._id },
+					{ ...product, image: image._id },
 					{
 						headers: { Authorization: token },
 					}
@@ -131,7 +131,7 @@ function CreateProduct() {
 	};
 
 	const styleUpload = {
-		display: images ? 'block' : 'none',
+		display: image ? 'block' : 'none',
 	};
 	return (
 		<div className="create_product">
@@ -143,7 +143,7 @@ function CreateProduct() {
 					</div>
 				) : (
 					<div id="file_img" style={styleUpload}>
-						<img src={images ? `${url}/${images.path}`.replace('uploads', '') : ''} alt="" />
+						<img src={image ? `${url}/${image.path}`.replace('uploads', '') : ''} alt="" />
 						<span onClick={handleDestroy}>X</span>
 					</div>
 				)}
