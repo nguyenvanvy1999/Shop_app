@@ -55,7 +55,7 @@ function CreateProduct() {
 
 			if (!file) return alert('File not exist.');
 
-			if (file.size > 1024 * 1024)
+			if (file.size > 3 * 1024 * 1024)
 				// 1mb
 				return alert('Size too large!');
 
