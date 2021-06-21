@@ -62,7 +62,7 @@ export class ProductService {
 	}
 	public async checkProduct(category: string): Promise<boolean> {
 		try {
-			const product = await Product.findOne({ category });
+			const product = await Product.exists({ category });
 			return product ? true : false;
 		} catch (error) {
 			throw error;

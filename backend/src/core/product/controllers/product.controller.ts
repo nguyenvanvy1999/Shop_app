@@ -72,7 +72,6 @@ export class ProductController {
 	public async deleteProduct(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
-			console.log(id);
 			const product = await productService.findById(id);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
 			await imageService.deleteById(product.image);
