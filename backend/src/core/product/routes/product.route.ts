@@ -3,7 +3,7 @@ import { IRoute } from '../../../common/interfaces';
 import { uploadOne } from '../../../common/upload';
 import { authMiddleware, authRole } from '../../account/middlewares';
 import { productController } from '../controllers';
-import { ProductCreateVAL, ProductUpdateVAL, RemoveImagesVAL } from '../validators';
+import { ProductCreateVAL, ProductUpdateVAL } from '../validators';
 
 export class ProductRoute implements IRoute {
 	public path = '/product';
@@ -19,7 +19,7 @@ export class ProductRoute implements IRoute {
 			.post(authMiddleware, uploadOne, ProductCreateVAL, productController.create);
 		this.routes
 			.route('/:id')
-			.put(authMiddleware, authRole, productController.editProduct)
+			.put(authMiddleware, authRole, ProductUpdateVAL, productController.editProduct)
 			.delete(authMiddleware, authRole, productController.deleteProduct);
 		this.routes.post('/upload', authMiddleware, authRole, productController.upload);
 		this.routes.post('/destroy', authMiddleware, authRole, productController.destroy);
