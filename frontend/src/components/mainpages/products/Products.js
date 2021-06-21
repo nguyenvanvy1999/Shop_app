@@ -11,7 +11,6 @@ function Products() {
 	const state = useContext(GlobalState);
 	const [products, setProducts] = state.productsAPI.products;
 	const [isAdmin] = state.userAPI.isAdmin;
-	const [token] = state.token;
 	const [callback, setCallback] = state.productsAPI.callback;
 	const [loading, setLoading] = useState(false);
 	const [isCheck, setIsCheck] = useState(false);
@@ -24,6 +23,7 @@ function Products() {
 	};
 
 	const deleteProduct = async (id) => {
+		const token = localStorage.getItem('accessToken');
 		try {
 			setLoading(true);
 			const deleteProduct = axios.delete(`${url}/product/${id}`, {

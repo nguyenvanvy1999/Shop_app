@@ -6,13 +6,12 @@ import { useHistory, useParams } from 'react-router-dom';
 import { url } from '../../../const';
 
 const initialState = {
-	product_id: '',
-	title: '',
+	ID: '',
+	title: 'title',
 	price: 0,
 	description: 'description',
 	content: 'content',
 	category: '',
-	_id: '',
 };
 
 function CreateProduct() {
@@ -74,7 +73,7 @@ function CreateProduct() {
 			setLoading(false);
 			setImages(res.data);
 		} catch (err) {
-			alert(err.response.data.msg);
+			alert(err.response.data.message);
 		}
 	};
 
@@ -83,8 +82,8 @@ function CreateProduct() {
 			if (!isAdmin) return alert("You're not an admin");
 			setLoading(true);
 			await axios.post(
-				'/api/destroy',
-				{ public_id: images.public_id },
+				`${url}/product/destroy`,
+				{ imageId: images._id },
 				{
 					headers: { Authorization: token },
 				}
@@ -92,7 +91,7 @@ function CreateProduct() {
 			setLoading(false);
 			setImages(false);
 		} catch (err) {
-			alert(err.response.data.msg);
+			alert(err.response.data.message);
 		}
 	};
 
@@ -109,16 +108,16 @@ function CreateProduct() {
 
 			if (onEdit) {
 				await axios.put(
-					`/api/products/${product._id}`,
-					{ ...product, images },
+					`${url}/product/${product._id}`,
+					{ ...product, images: images._id },
 					{
 						headers: { Authorization: token },
 					}
 				);
 			} else {
 				await axios.post(
-					'/api/products',
-					{ ...product, images },
+					`${url}/product`,
+					{ ...product, images: images._id },
 					{
 						headers: { Authorization: token },
 					}
@@ -127,7 +126,7 @@ function CreateProduct() {
 			setCallback(!callback);
 			history.push('/');
 		} catch (err) {
-			alert(err.response.data.msg);
+			alert(err.response.data.message);
 		}
 	};
 
@@ -144,7 +143,7 @@ function CreateProduct() {
 					</div>
 				) : (
 					<div id="file_img" style={styleUpload}>
-						<img src={images ? images.url : ''} alt="" />
+						<img src={images ? `${url}/${images.path}`.replace('uploads', '') : ''} alt="" />
 						<span onClick={handleDestroy}>X</span>
 					</div>
 				)}
@@ -155,10 +154,10 @@ function CreateProduct() {
 					<label htmlFor="product_id">Product ID</label>
 					<input
 						type="text"
-						name="product_id"
-						id="product_id"
+						name="ID"
+						id="ID"
 						required
-						value={product.product_id}
+						value={product.ID}
 						onChange={handleChangeInput}
 						disabled={onEdit}
 					/>

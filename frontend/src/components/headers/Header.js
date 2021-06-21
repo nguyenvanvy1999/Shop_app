@@ -3,8 +3,6 @@ import { GlobalState } from '../../GlobalState';
 import Menu from './icon/menu.svg';
 import Close from './icon/close.svg';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { url } from '../../const';
 
 function Header() {
 	const state = useContext(GlobalState);
@@ -13,9 +11,9 @@ function Header() {
 	const [menu, setMenu] = useState(false);
 
 	const logoutUser = async () => {
-		await axios.get(`${url}/account/logout`);
-
 		localStorage.removeItem('firstLogin');
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
 
 		window.location.href = '/';
 	};
@@ -36,9 +34,6 @@ function Header() {
 	const loggedRouter = () => {
 		return (
 			<>
-				<li>
-					<Link to="/history">History</Link>
-				</li>
 				<li>
 					<Link to="/" onClick={logoutUser}>
 						Logout

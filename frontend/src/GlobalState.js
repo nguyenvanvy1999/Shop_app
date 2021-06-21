@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import ProductsAPI from './api/ProductsAPI';
 import UserAPI from './api/UserAPI';
 import CategoriesAPI from './api/CategoriesAPI';
@@ -9,13 +9,16 @@ export const GlobalState = createContext();
 
 export const DataProvider = ({ children }) => {
 	const [token, setToken] = useState(false);
-
 	useEffect(() => {
 		const firstLogin = localStorage.getItem('firstLogin');
+		const refreshtoken = localStorage.getItem('refreshToken');
 		if (firstLogin) {
 			const refreshToken = async () => {
-				const res = await axios.get(`${url}/account/refresh_token`);
-				setToken(res.data.accesstoken);
+				const res = await axios.get(`${url}/account/refresh_token`, {
+					headers: { 'content-type': 'multipart/form-data', Authorization: refreshtoken },
+				});
+				setToken(res.data.accessToken);
+				localStorage.setItem('accessToken', res.data.accessToken);
 				setTimeout(() => {
 					refreshToken();
 				}, 10 * 60 * 1000);
