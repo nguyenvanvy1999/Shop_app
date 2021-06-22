@@ -19,9 +19,10 @@ export class ProductRoute implements IRoute {
 			.post(authMiddleware, uploadOne, ProductCreateVAL, productController.create);
 		this.routes
 			.route('/:id')
-			.put(authMiddleware, authRole, ProductUpdateVAL, productController.editProduct)
+			.put(authMiddleware, authRole, uploadOne, ProductUpdateVAL, productController.editProduct)
 			.delete(authMiddleware, authRole, ProductDeleteVAL, productController.deleteProduct);
 		this.routes.post('/upload', authMiddleware, authRole, productController.upload);
 		this.routes.post('/destroy', authMiddleware, authRole, productController.destroy);
+		this.routes.post('/upload/multiple', productController.uploadSlide);
 	}
 }
