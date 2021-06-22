@@ -10,4 +10,5 @@ export interface IProduct extends IBase, Document {
 	price: number;
 	description: string;
 	image: string;
+	slide: string[];
 }
