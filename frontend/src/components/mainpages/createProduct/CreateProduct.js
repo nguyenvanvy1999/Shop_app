@@ -1,8 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { GlobalState } from '../../../GlobalState';
-import Loading from '../utils/loading/Loading';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { url } from '../../../const';
 
 const initialState = {
@@ -15,84 +14,42 @@ const initialState = {
 };
 
 function CreateProduct() {
+	const formData = new FormData();
 	const state = useContext(GlobalState);
 	const [product, setProduct] = useState(initialState);
 	const [categories] = state.categoriesAPI.categories;
-	const [image, setImage] = useState(false);
-	const [loading, setLoading] = useState(false);
-
 	const [isAdmin] = state.userAPI.isAdmin;
 	const [token] = state.token;
-
 	const history = useHistory();
-	const param = useParams();
-
-	const [products] = state.productsAPI.products;
-	const [onEdit, setOnEdit] = useState(false);
 	const [callback, setCallback] = state.productsAPI.callback;
-
+	const [selectedFile, setSelectedFile] = useState();
+	const [preview, setPreview] = useState();
 	useEffect(() => {
-		if (param.id) {
-			setOnEdit(true);
-			products.forEach((product) => {
-				if (product._id === param.id) {
-					setProduct(product);
-					setImage(product.image);
-				}
-			});
-		} else {
-			setOnEdit(false);
-			setProduct(initialState);
-			setImage(false);
+		if (!selectedFile) {
+			setPreview(undefined);
+			return;
 		}
-	}, [param.id, products]);
+		const objectUrl = URL.createObjectURL(selectedFile);
+		setPreview(objectUrl);
+		return () => URL.revokeObjectURL(objectUrl);
+	}, [selectedFile]);
 
-	const handleUpload = async (e) => {
-		e.preventDefault();
-		try {
-			if (!isAdmin) return alert("You're not an admin");
-			const file = e.target.files[0];
-
-			if (!file) return alert('File not exist.');
-
-			if (file.size > 3 * 1024 * 1024)
-				// 1mb
-				return alert('Size too large!');
-
-			if (file.type !== 'image/jpeg' && file.type !== 'image/png')
-				// 1mb
-				return alert('File format is incorrect.');
-
-			let formData = new FormData();
-			formData.append('file', file);
-
-			setLoading(true);
-			const res = await axios.post(`${url}/product/upload`, formData, {
-				headers: { 'content-type': 'multipart/form-data', Authorization: token },
-			});
-			setLoading(false);
-			setImage(res.data);
-		} catch (err) {
-			alert(err.response.data.message);
-		}
+	const handleDestroy = () => {
+		setSelectedFile(undefined);
+		formData.delete('file');
 	};
 
-	const handleDestroy = async () => {
-		try {
-			if (!isAdmin) return alert("You're not an admin");
-			setLoading(true);
-			await axios.post(
-				`${url}/product/destroy`,
-				{ imageId: image._id },
-				{
-					headers: { Authorization: token },
-				}
-			);
-			setLoading(false);
-			setImage(false);
-		} catch (err) {
-			alert(err.response.data.message);
+	const onSelectFile = (e) => {
+		if (!isAdmin) return alert("You're not an admin");
+		const file = e.target.files[0];
+		if (!file) return alert('File not exist.');
+		if (file.size > 3 * 1024 * 1024) return alert('Size too large!');
+		if (file.type !== 'image/jpeg' && file.type !== 'image/png') return alert('File format is incorrect.');
+		if (!e.target.files || e.target.files.length === 0) {
+			setSelectedFile(undefined);
+			return;
 		}
+		setSelectedFile(file);
 	};
 
 	const handleChangeInput = (e) => {
@@ -104,63 +61,39 @@ function CreateProduct() {
 		e.preventDefault();
 		try {
 			if (!isAdmin) return alert("You're not an admin");
-			if (!image) return alert('No Image Upload');
-
-			if (onEdit) {
-				await axios.put(
-					`${url}/product/${product._id}`,
-					{ ...product, image: image._id },
-					{
-						headers: { Authorization: token },
-					}
-				);
-			} else {
-				await axios.post(
-					`${url}/product`,
-					{ ...product, image: image._id },
-					{
-						headers: { Authorization: token },
-					}
-				);
-			}
+			formData.append('ID', product.ID);
+			formData.append('title', product.title);
+			formData.append('category', product.category);
+			formData.append('price', product.price);
+			formData.append('description', product.description);
+			formData.append('content', product.content);
+			formData.append('file', selectedFile);
+			await axios.post(`${url}/product`, formData, {
+				headers: { 'Content-Type': 'multipart/form-data', Authorization: token },
+			});
 			setCallback(!callback);
 			history.push('/');
 		} catch (err) {
 			alert(err.response.data.message);
 		}
 	};
-
 	const styleUpload = {
-		display: image ? 'block' : 'none',
+		display: selectedFile ? 'block' : 'none',
 	};
 	return (
 		<div className="create_product">
 			<div className="upload">
-				<input type="file" name="file" id="file_up" onChange={handleUpload} />
-				{loading ? (
-					<div id="file_img">
-						<Loading />
-					</div>
-				) : (
-					<div id="file_img" style={styleUpload}>
-						<img src={image ? `${url}/${image.path}`.replace('uploads', '') : ''} alt="" />
-						<span onClick={handleDestroy}>X</span>
-					</div>
-				)}
+				<input type="file" name="file" id="file_up" onChange={onSelectFile} />
+				<div id="file_img" style={styleUpload}>
+					<img src={preview} alt="" />
+					<span onClick={handleDestroy}>X</span>
+				</div>
 			</div>
 
 			<form onSubmit={handleSubmit}>
 				<div className="row">
 					<label htmlFor="product_id">Product ID</label>
-					<input
-						type="text"
-						name="ID"
-						id="ID"
-						required
-						value={product.ID}
-						onChange={handleChangeInput}
-						disabled={onEdit}
-					/>
+					<input type="text" name="ID" id="ID" required value={product.ID} onChange={handleChangeInput} />
 				</div>
 
 				<div className="row">
@@ -211,7 +144,7 @@ function CreateProduct() {
 					</select>
 				</div>
 
-				<button type="submit">{onEdit ? 'Update' : 'Create'}</button>
+				<button type="submit">Create</button>
 			</form>
 		</div>
 	);
