@@ -13,6 +13,7 @@ const ProductSchema: Schema = new Schema(
 		description: { type: String, require: true, default: '' },
 		content: { type: String, default: '' },
 		image: { type: Types.ObjectId, ref: 'Image' },
+		slide: { type: [{ type: Types.ObjectId, ref: 'Image' }] },
 		createdBy: { type: Types.ObjectId, ref: 'Account', default: null },
 		updatedBy: { type: Types.ObjectId, ref: 'Account', default: null },
 	},
