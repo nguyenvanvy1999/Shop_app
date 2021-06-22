@@ -14,7 +14,6 @@ function ProductsAPI() {
 	useEffect(() => {
 		const getProducts = async () => {
 			const res = await axios.get(`${url}/product?limit=${page * 9}&${category}&${sort}&title[regex]=${search}`);
-			console.log(res.data.products);
 			setProducts(res.data.products);
 			setResult(res.data.result);
 		};

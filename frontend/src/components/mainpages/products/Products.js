@@ -60,7 +60,6 @@ function Products() {
 	return (
 		<>
 			<Filters />
-
 			{isAdmin && (
 				<div className="delete-all">
 					<span>Select all</span>
@@ -68,7 +67,6 @@ function Products() {
 					<button onClick={deleteAll}>Delete ALL</button>
 				</div>
 			)}
-
 			<div className="products">
 				{products.map((product) => {
 					return (
@@ -82,7 +80,6 @@ function Products() {
 					);
 				})}
 			</div>
-
 			<LoadMore />
 			{products.length === 0 && <Loading />}
 		</>
