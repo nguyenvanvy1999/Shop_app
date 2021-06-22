@@ -3,10 +3,11 @@ import { HttpException } from '../../../common/exception/http-error';
 import { productService } from '../services';
 import { ProductCreateDTO, ProductUpdateDTO } from '../dtos';
 import { RequestWithUser } from '../../base/interfaces';
-import { uploadOne } from '../../../common/upload';
+import { uploadMany, uploadOne } from '../../../common/upload';
 import { imageService } from '../../image/services';
 import { removeFilesError } from '../../base/tools';
 import { Product } from '../models';
+import { IImage } from '../../image/interfaces/image.interface';
 
 class APIQuery {
 	constructor(public query: any, public queryString: any) {}
@@ -46,8 +47,11 @@ class APIQuery {
 export class ProductController {
 	public async create(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
+			const { filename: name, path } = req.file;
+			const image = await imageService.create({ name, path });
 			let product: ProductCreateDTO = req.body;
 			product.userId = req.user._id;
+			product.image = image._id;
 			const newProduct = await productService.create(product);
 			return res.status(200).send({ newProduct });
 		} catch (error) {
@@ -56,11 +60,9 @@ export class ProductController {
 	}
 	public async addImage(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			await uploadOne(req, res);
-			const file: any = req.file;
-			let image;
-			if (file) {
-				const { filename: name, path } = file;
+			let image: IImage;
+			if (req.file) {
+				const { filename: name, path } = req.file;
 				image = await imageService.create({ name, path });
 			}
 			const product = await productService.updateImage({ productId: req.body.productId, imageId: image._id });
@@ -78,7 +80,8 @@ export class ProductController {
 			await productService.deleteProduct(id);
 			return res.status(200).send('Delete successfully!');
 		} catch (error) {
-			next(error);
+			await productService.deleteProduct(req.params.id);
+			return res.status(200).send('Delete successfully!');
 		}
 	}
 	public async editProduct(req: RequestWithUser, res: Response, next: NextFunction) {
@@ -86,6 +89,11 @@ export class ProductController {
 			let productId = req.params.id;
 			let update: ProductUpdateDTO = { ...req.body };
 			update.userId = req.user._id;
+			if (req.file) {
+				const { filename: name, path } = req.file;
+				const image = await imageService.create({ name, path });
+				update.image = image._id;
+			}
 			const product = await productService.findById(productId);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
 			const newProduct = await productService.editProduct(productId, update);
@@ -96,12 +104,15 @@ export class ProductController {
 	}
 	public async getAll(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			const features = new APIQuery(Product.find().populate('image'), req.query).filtering().sorting().paginating();
+			const features = new APIQuery(Product.find().populate('image').populate('slide'), req.query)
+				.filtering()
+				.sorting()
+				.paginating();
 			const products = await features.query;
 			return res.status(200).json({
 				status: 'success',
 				result: products.length,
-				products: products,
+				products,
 			});
 		} catch (error) {
 			next(error);
@@ -122,6 +133,24 @@ export class ProductController {
 		try {
 			await imageService.deleteById(req.body.imageId);
 			return res.status(200).json({ message: 'OK' });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async uploadSlide(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			await uploadMany(req, res);
+			return res.json({ message: 'OK' });
+		} catch (error) {
+			next(error);
+		}
+	}
+	public async destroySlide(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.params;
+			const { imageId } = req.body;
+			await imageService.deleteById(imageId);
+			return await productService.pullFromSlide(id, imageId);
 		} catch (error) {
 			next(error);
 		}
