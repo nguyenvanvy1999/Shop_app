@@ -50,6 +50,13 @@ button {
 /* ------------------- Create Product -------------- */
 @import url('./components/mainpages/createProduct/createProduct.css');
 
+/* ------------------- Update Product -------------- */
+@import url('./components/mainpages/updateProduct/updateProduct.css');
+
+/* ------------------- Slide Show -------------- */
+@import url('./components/mainpages/slideShow/slide.css');
+@import url('react-slideshow-image/dist/styles.css');
+
 /* ----------------- Responsive ------------------ */
 @media (max-width: 820px) {
 	header .logo {
