@@ -54,8 +54,7 @@ button {
 @import url('./components/mainpages/updateProduct/updateProduct.css');
 
 /* ------------------- Slide Show -------------- */
-@import url('./components/mainpages/slideShow/slide.css');
-@import url('react-slideshow-image/dist/styles.css');
+@import url('./components/mainpages/utils/slideShow/slide.css');
 
 /* ----------------- Responsive ------------------ */
 @media (max-width: 820px) {
