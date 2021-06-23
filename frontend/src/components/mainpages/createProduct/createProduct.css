@@ -40,3 +40,13 @@ textarea {
 	letter-spacing: 2px;
 	font-weight: 700;
 }
+
+.row button {
+	width: 150px;
+	height: 40px;
+	background: #555;
+	color: white;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-weight: 700;
+}

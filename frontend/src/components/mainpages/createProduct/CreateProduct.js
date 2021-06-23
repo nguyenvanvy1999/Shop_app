@@ -26,7 +26,7 @@ function CreateProduct() {
 	const [images, setImages] = React.useState([]);
 	const maxNumber = 69;
 
-	const onChange = (imageList, addUpdateIndex) => {
+	const onChange = (imageList) => {
 		setImages(imageList);
 	};
 
@@ -46,9 +46,6 @@ function CreateProduct() {
 			formData.append('description', product.description);
 			formData.append('content', product.content);
 			Array.from(images).forEach((image) => formData.append('files', image.file));
-			for (var value of formData.entries()) {
-				console.log(value);
-			}
 			await axios.post(`${url}/product`, formData, {
 				headers: { 'Content-Type': 'multipart/form-data', Authorization: token },
 			});
@@ -60,7 +57,7 @@ function CreateProduct() {
 	};
 	return (
 		<div className="create_product">
-			<form onSubmit={handleSubmit}>
+			<div className="row">
 				<ImageUploading multiple value={images} onChange={onChange} maxNumber={maxNumber} dataURLKey="data_url">
 					{({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => (
 						<div className="upload__image-wrapper">
@@ -81,6 +78,8 @@ function CreateProduct() {
 						</div>
 					)}
 				</ImageUploading>
+			</div>
+			<form onSubmit={handleSubmit}>
 				<div className="row">
 					<label htmlFor="product_id">Product ID</label>
 					<input type="text" name="ID" id="ID" required value={product.ID} onChange={handleChangeInput} />

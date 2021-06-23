@@ -3,7 +3,6 @@ import { Zoom } from 'react-slideshow-image';
 import 'react-slideshow-image/dist/styles.css';
 
 const Slideshow = ({ images }) => {
-	console.log(images);
 	return (
 		<div>
 			<Zoom scale={0.4}>
