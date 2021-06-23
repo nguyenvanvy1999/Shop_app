@@ -61,18 +61,4 @@ export class ProductService {
 			throw error;
 		}
 	}
-	public async pushToSlide(productId: string, imageId: string): Promise<IProduct> {
-		try {
-			return await Product.findOneAndUpdate({ _id: productId }, { $push: { slide: imageId } }, { new: true });
-		} catch (error) {
-			throw error;
-		}
-	}
-	public async pullFromSlide(productId: string, imageId: string): Promise<IProduct> {
-		try {
-			return await Product.findOneAndUpdate({ _id: productId }, { $pull: { slide: imageId } }, { new: true });
-		} catch (error) {
-			throw error;
-		}
-	}
 }

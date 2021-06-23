@@ -58,8 +58,6 @@ export class ProductController {
 				})
 			);
 			product.slide = imageIds;
-			console.log();
-
 			const newProduct = await productService.create(product);
 			return res.status(200).send({ newProduct });
 		} catch (error) {
@@ -86,10 +84,17 @@ export class ProductController {
 			update.userId = req.user._id;
 			const product = await productService.findById(productId);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
-			if (req.file) {
-				// const { filename: name, path } = req.file;
-				// const image = await imageService.create({ name, path });
-				// await imageService.deleteById(product.image);
+			const files: any = req.files;
+			if (files.length !== 0) {
+				let imageIds = [];
+				await Promise.all(
+					files.map(async (file) => {
+						const image = await imageService.create({ name: file.filename, path: file.path });
+						imageIds.push(image._id);
+					})
+				);
+				await imageService.deleteMany(product.slide);
+				update.slide = imageIds;
 			}
 			const newProduct = await productService.editProduct(productId, update);
 			return res.status(200).send(newProduct);
@@ -109,24 +114,6 @@ export class ProductController {
 				result: products.length,
 				products,
 			});
-		} catch (error) {
-			next(error);
-		}
-	}
-	public async uploadSlide(req: RequestWithUser, res: Response, next: NextFunction) {
-		try {
-			await uploadMany(req, res);
-			return res.json({ message: 'OK' });
-		} catch (error) {
-			next(error);
-		}
-	}
-	public async destroySlide(req: RequestWithUser, res: Response, next: NextFunction) {
-		try {
-			const { id } = req.params;
-			const { imageId } = req.body;
-			await imageService.deleteById(imageId);
-			return await productService.pullFromSlide(id, imageId);
 		} catch (error) {
 			next(error);
 		}
