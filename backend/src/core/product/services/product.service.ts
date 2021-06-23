@@ -46,13 +46,6 @@ export class ProductService {
 			throw error;
 		}
 	}
-	public async updateImage(edit: EditImageDTO): Promise<IProduct> {
-		try {
-			return await Product.findOneAndUpdate({ _id: edit.productId }, { image: edit.imageId }, { new: true });
-		} catch (error) {
-			throw error;
-		}
-	}
 	public async deleteProduct(_id: string): Promise<IProduct> {
 		try {
 			return await Product.findOneAndDelete({ _id });
