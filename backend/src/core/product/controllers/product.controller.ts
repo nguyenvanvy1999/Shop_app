@@ -47,26 +47,21 @@ class APIQuery {
 export class ProductController {
 	public async create(req: RequestWithUser, res: Response, next: NextFunction) {
 		try {
-			const { filename: name, path } = req.file;
-			const image = await imageService.create({ name, path });
+			const files: any = req.files;
 			let product: ProductCreateDTO = req.body;
 			product.userId = req.user._id;
-			product.image = image._id;
+			let imageIds = [];
+			await Promise.all(
+				files.map(async (file) => {
+					const image = await imageService.create({ name: file.filename, path: file.path });
+					imageIds.push(image._id);
+				})
+			);
+			product.slide = imageIds;
+			console.log();
+
 			const newProduct = await productService.create(product);
 			return res.status(200).send({ newProduct });
-		} catch (error) {
-			next(error);
-		}
-	}
-	public async addImage(req: RequestWithUser, res: Response, next: NextFunction) {
-		try {
-			let image: IImage;
-			if (req.file) {
-				const { filename: name, path } = req.file;
-				image = await imageService.create({ name, path });
-			}
-			const product = await productService.updateImage({ productId: req.body.productId, imageId: image._id });
-			return res.status(200).send(product);
 		} catch (error) {
 			next(error);
 		}
@@ -76,7 +71,7 @@ export class ProductController {
 			const { id } = req.params;
 			const product = await productService.findById(id);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
-			await imageService.deleteById(product.image);
+			await imageService.deleteMany(product.slide);
 			await productService.deleteProduct(id);
 			return res.status(200).send('Delete successfully!');
 		} catch (error) {
@@ -89,13 +84,13 @@ export class ProductController {
 			let productId = req.params.id;
 			let update: ProductUpdateDTO = { ...req.body };
 			update.userId = req.user._id;
-			if (req.file) {
-				const { filename: name, path } = req.file;
-				const image = await imageService.create({ name, path });
-				update.image = image._id;
-			}
 			const product = await productService.findById(productId);
 			if (!product) throw new HttpException(400, 'ProductID wrong!');
+			if (req.file) {
+				// const { filename: name, path } = req.file;
+				// const image = await imageService.create({ name, path });
+				// await imageService.deleteById(product.image);
+			}
 			const newProduct = await productService.editProduct(productId, update);
 			return res.status(200).send(newProduct);
 		} catch (error) {
@@ -114,25 +109,6 @@ export class ProductController {
 				result: products.length,
 				products,
 			});
-		} catch (error) {
-			next(error);
-		}
-	}
-	public async upload(req: RequestWithUser, res: Response, next: NextFunction) {
-		try {
-			await uploadOne(req, res);
-			const { filename: name, path } = req.file;
-			const image = await imageService.create({ name, path });
-			return res.status(200).json(image);
-		} catch (error) {
-			removeFilesError(req.files);
-			next(error);
-		}
-	}
-	public async destroy(req: RequestWithUser, res: Response, next: NextFunction) {
-		try {
-			await imageService.deleteById(req.body.imageId);
-			return res.status(200).json({ message: 'OK' });
 		} catch (error) {
 			next(error);
 		}
