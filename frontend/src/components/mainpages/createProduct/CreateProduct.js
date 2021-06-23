@@ -1,8 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { GlobalState } from '../../../GlobalState';
 import { useHistory } from 'react-router-dom';
 import { url } from '../../../const';
+import ImageUploading from 'react-images-uploading';
 
 const initialState = {
 	ID: '',
@@ -22,34 +23,11 @@ function CreateProduct() {
 	const [token] = state.token;
 	const history = useHistory();
 	const [callback, setCallback] = state.productsAPI.callback;
-	const [selectedFile, setSelectedFile] = useState();
-	const [preview, setPreview] = useState();
-	useEffect(() => {
-		if (!selectedFile) {
-			setPreview(undefined);
-			return;
-		}
-		const objectUrl = URL.createObjectURL(selectedFile);
-		setPreview(objectUrl);
-		return () => URL.revokeObjectURL(objectUrl);
-	}, [selectedFile]);
+	const [images, setImages] = React.useState([]);
+	const maxNumber = 69;
 
-	const handleDestroy = () => {
-		setSelectedFile(undefined);
-		formData.delete('file');
-	};
-
-	const onSelectFile = (e) => {
-		if (!isAdmin) return alert("You're not an admin");
-		const file = e.target.files[0];
-		if (!file) return alert('File not exist.');
-		if (file.size > 3 * 1024 * 1024) return alert('Size too large!');
-		if (file.type !== 'image/jpeg' && file.type !== 'image/png') return alert('File format is incorrect.');
-		if (!e.target.files || e.target.files.length === 0) {
-			setSelectedFile(undefined);
-			return;
-		}
-		setSelectedFile(file);
+	const onChange = (imageList, addUpdateIndex) => {
+		setImages(imageList);
 	};
 
 	const handleChangeInput = (e) => {
@@ -67,7 +45,10 @@ function CreateProduct() {
 			formData.append('price', product.price);
 			formData.append('description', product.description);
 			formData.append('content', product.content);
-			formData.append('file', selectedFile);
+			Array.from(images).forEach((image) => formData.append('files', image.file));
+			for (var value of formData.entries()) {
+				console.log(value);
+			}
 			await axios.post(`${url}/product`, formData, {
 				headers: { 'Content-Type': 'multipart/form-data', Authorization: token },
 			});
@@ -77,20 +58,29 @@ function CreateProduct() {
 			alert(err.response.data.message);
 		}
 	};
-	const styleUpload = {
-		display: selectedFile ? 'block' : 'none',
-	};
 	return (
 		<div className="create_product">
-			<div className="upload">
-				<input type="file" name="file" id="file_up" onChange={onSelectFile} />
-				<div id="file_img" style={styleUpload}>
-					<img src={preview} alt="" />
-					<span onClick={handleDestroy}>X</span>
-				</div>
-			</div>
-
 			<form onSubmit={handleSubmit}>
+				<ImageUploading multiple value={images} onChange={onChange} maxNumber={maxNumber} dataURLKey="data_url">
+					{({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => (
+						<div className="upload__image-wrapper">
+							<button style={isDragging ? { color: 'red' } : undefined} onClick={onImageUpload} {...dragProps}>
+								Click or Drop here
+							</button>
+							&nbsp;
+							<button onClick={onImageRemoveAll}> Remove all images</button>
+							{imageList.map((image, index) => (
+								<div key={index} className="image-item">
+									<img src={image['data_url']} alt="" width={100} height={100} />
+									<div className="image-item__btn-wrapper">
+										<button onClick={() => onImageUpdate(index)}>Update</button>
+										<button onClick={() => onImageRemove(index)}>Remove</button>
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+				</ImageUploading>
 				<div className="row">
 					<label htmlFor="product_id">Product ID</label>
 					<input type="text" name="ID" id="ID" required value={product.ID} onChange={handleChangeInput} />
