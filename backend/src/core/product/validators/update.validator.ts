@@ -10,7 +10,7 @@ export const ProductUpdateVAL = celebrate({
 			price: Joi.number().min(0),
 			description: Joi.string(),
 			content: Joi.string(),
-			image: Joi.any(),
+			slide: Joi.array().items(Joi.any()),
 		})
 		.unknown(true),
 	[Segments.PARAMS]: Joi.object().keys({
