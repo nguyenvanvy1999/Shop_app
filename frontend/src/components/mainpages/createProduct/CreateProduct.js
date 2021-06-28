@@ -3,7 +3,8 @@ import axios from 'axios';
 import { GlobalState } from '../../../GlobalState';
 import { useHistory } from 'react-router-dom';
 import { url } from '../../../const';
-import ImageUploading from 'react-images-uploading';
+import UploadImage from '../utils/uploadImage/uploadImage';
+import FormProduct from '../utils/formProduct/formProduct';
 
 const initialState = {
 	ID: '',
@@ -57,84 +58,17 @@ function CreateProduct() {
 	};
 	return (
 		<div className="create_product">
-			<div className="row">
-				<ImageUploading multiple value={images} onChange={onChange} maxNumber={maxNumber} dataURLKey="data_url">
-					{({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => (
-						<div className="upload__image-wrapper">
-							<button style={isDragging ? { color: 'red' } : undefined} onClick={onImageUpload} {...dragProps}>
-								Click or Drop here
-							</button>
-							&nbsp;
-							<button onClick={onImageRemoveAll}> Remove all images</button>
-							{imageList.map((image, index) => (
-								<div key={index} className="image-item">
-									<img src={image['data_url']} alt="" width={100} height={100} />
-									<div className="image-item__btn-wrapper">
-										<button onClick={() => onImageUpdate(index)}>Update</button>
-										<button onClick={() => onImageRemove(index)}>Remove</button>
-									</div>
-								</div>
-							))}
-						</div>
-					)}
-				</ImageUploading>
+			<div className="image_upload">
+				<UploadImage images={images} handlerUpload={onChange} maxNumber={maxNumber} />
 			</div>
-			<form onSubmit={handleSubmit}>
-				<div className="row">
-					<label htmlFor="product_id">Product ID</label>
-					<input type="text" name="ID" id="ID" required value={product.ID} onChange={handleChangeInput} />
-				</div>
 
-				<div className="row">
-					<label htmlFor="title">Title</label>
-					<input type="text" name="title" id="title" required value={product.title} onChange={handleChangeInput} />
-				</div>
-
-				<div className="row">
-					<label htmlFor="price">Price</label>
-					<input type="number" name="price" id="price" required value={product.price} onChange={handleChangeInput} />
-				</div>
-
-				<div className="row">
-					<label htmlFor="description">Description</label>
-					<textarea
-						type="text"
-						name="description"
-						id="description"
-						required
-						value={product.description}
-						rows="5"
-						onChange={handleChangeInput}
-					/>
-				</div>
-
-				<div className="row">
-					<label htmlFor="content">Content</label>
-					<textarea
-						type="text"
-						name="content"
-						id="content"
-						required
-						value={product.content}
-						rows="7"
-						onChange={handleChangeInput}
-					/>
-				</div>
-
-				<div className="row">
-					<label htmlFor="categories">Categories: </label>
-					<select name="category" value={product.category} onChange={handleChangeInput}>
-						<option value="">Please select a category</option>
-						{categories.map((category) => (
-							<option value={category._id} key={category._id}>
-								{category.name}
-							</option>
-						))}
-					</select>
-				</div>
-
-				<button type="submit">Create</button>
-			</form>
+			<FormProduct
+				product={product}
+				categories={categories}
+				handleSubmit={handleSubmit}
+				name="Create"
+				handleChangeInput={handleChangeInput}
+			/>
 		</div>
 	);
 }

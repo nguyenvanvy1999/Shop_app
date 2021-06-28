@@ -41,7 +41,14 @@ export class ProductService {
 	}
 	public async editProduct(_id: string, update: ProductUpdateDTO): Promise<IProduct> {
 		try {
-			return await Product.findOneAndUpdate({ _id }, { ...update, updatedBy: update.userId }, { new: true });
+			return await Product.findOneAndUpdate(
+				{ _id },
+				{
+					...update,
+					updatedBy: update.userId,
+				},
+				{ new: true }
+			);
 		} catch (error) {
 			throw error;
 		}
@@ -57,6 +64,20 @@ export class ProductService {
 		try {
 			const product = await Product.exists({ category });
 			return product ? true : false;
+		} catch (error) {
+			throw error;
+		}
+	}
+	public async pullSlide(_id: string, imageId: string): Promise<IProduct> {
+		try {
+			return await Product.findByIdAndUpdate(_id, { $pull: { slide: imageId } });
+		} catch (error) {
+			throw error;
+		}
+	}
+	public async pushSlide(_id: string, imageIds: string[]): Promise<IProduct> {
+		try {
+			return await Product.findByIdAndUpdate(_id, { $push: { slide: { $each: imageIds } } });
 		} catch (error) {
 			throw error;
 		}

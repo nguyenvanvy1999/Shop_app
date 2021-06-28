@@ -21,5 +21,6 @@ export class ProductRoute implements IRoute {
 			.route('/:id')
 			.put(authMiddleware, authRole, uploadMany, ProductUpdateVAL, productController.editProduct)
 			.delete(authMiddleware, authRole, ProductDeleteVAL, productController.deleteProduct);
+		this.routes.put('/slide/:id', authMiddleware, authRole, productController.pullImage);
 	}
 }

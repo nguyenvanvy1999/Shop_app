@@ -3,11 +3,8 @@ import { HttpException } from '../../../common/exception/http-error';
 import { productService } from '../services';
 import { ProductCreateDTO, ProductUpdateDTO } from '../dtos';
 import { RequestWithUser } from '../../base/interfaces';
-import { uploadMany, uploadOne } from '../../../common/upload';
 import { imageService } from '../../image/services';
-import { removeFilesError } from '../../base/tools';
 import { Product } from '../models';
-import { IImage } from '../../image/interfaces/image.interface';
 
 class APIQuery {
 	constructor(public query: any, public queryString: any) {}
@@ -93,8 +90,7 @@ export class ProductController {
 						imageIds.push(image._id);
 					})
 				);
-				await imageService.deleteMany(product.slide);
-				update.slide = imageIds;
+				await productService.pushSlide(productId, imageIds);
 			}
 			const newProduct = await productService.editProduct(productId, update);
 			return res.status(200).send(newProduct);
@@ -116,6 +112,19 @@ export class ProductController {
 			});
 		} catch (error) {
 			next(error);
+		}
+	}
+	public async pullImage(req: RequestWithUser, res: Response, next: NextFunction) {
+		try {
+			const productId = req.params.id;
+			const imageId = req.body.image;
+			await imageService.deleteById(imageId);
+			return await productService.pullSlide(productId, imageId);
+		} catch (error) {
+			const productId = req.params.id;
+			const imageId = req.body.image;
+			await imageService.deleteById(imageId);
+			await productService.pullSlide(productId, imageId);
 		}
 	}
 }
