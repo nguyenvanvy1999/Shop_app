@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { IRoute } from '../../../common/interfaces';
-import { uploadMany, uploadOne } from '../../../common/upload';
+import { uploadMany } from '../../../common/upload';
 import { authMiddleware, authRole } from '../../account/middlewares';
 import { productController } from '../controllers';
 import { ProductCreateVAL, ProductDeleteVAL, ProductUpdateVAL } from '../validators';
