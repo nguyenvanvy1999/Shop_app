@@ -3,9 +3,9 @@ import axios from 'axios';
 import { GlobalState } from '../../../GlobalState';
 import { useHistory, useParams } from 'react-router-dom';
 import { url } from '../../../const';
-import ImageItem from '../utils/imageItem/imageItem';
 import UploadImage from '../utils/uploadImage/uploadImage';
 import FormProduct from '../utils/formProduct/formProduct';
+import ImagesShow from '../utils/imagesShow/imagesShow';
 
 const initialState = {
 	ID: '',
@@ -40,22 +40,7 @@ function UpdateProduct() {
 			}
 		});
 	}, [param.id, products]);
-	const onDelete = async (item) => {
-		try {
-			await axios.put(
-				`${url}/product/slide/${product._id}`,
-				{ image: item._id },
-				{
-					headers: { Authorization: token },
-				}
-			);
-			const data = slide.filter((i) => i.id !== item.id);
-			console.log(data);
-			setSlide([...data]);
-		} catch (error) {
-			alert(error.response.data.message);
-		}
-	};
+
 	const onChange = (imageList) => {
 		setImages(imageList);
 	};
@@ -89,11 +74,7 @@ function UpdateProduct() {
 	return (
 		<div className="update_product">
 			<div className="row">
-				{slide.map((each, index) => (
-					<div key={each._id}>
-						<ImageItem image={each} deleteImage={onDelete} />
-					</div>
-				))}
+				<ImagesShow images={slide} productId={product._id} />
 			</div>
 
 			<FormProduct
@@ -104,7 +85,7 @@ function UpdateProduct() {
 				handleChangeInput={handleChangeInput}
 			/>
 
-			<div className="image_upload">
+			<div className="row">
 				<UploadImage images={images} handlerUpload={onChange} maxNumber={maxNumber} />
 			</div>
 		</div>

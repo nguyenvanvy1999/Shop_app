@@ -119,12 +119,14 @@ export class ProductController {
 			const productId = req.params.id;
 			const imageId = req.body.image;
 			await imageService.deleteById(imageId);
-			return await productService.pullSlide(productId, imageId);
+			const product = await productService.pullSlide(productId, imageId);
+			return res.status(200).send(product);
 		} catch (error) {
 			const productId = req.params.id;
 			const imageId = req.body.image;
 			await imageService.deleteById(imageId);
 			await productService.pullSlide(productId, imageId);
+			next(error);
 		}
 	}
 }

@@ -70,7 +70,7 @@ export class ProductService {
 	}
 	public async pullSlide(_id: string, imageId: string): Promise<IProduct> {
 		try {
-			return await Product.findByIdAndUpdate(_id, { $pull: { slide: imageId } });
+			return await Product.findByIdAndUpdate(_id, { $pull: { slide: imageId } }, { new: true }).populate('slide');
 		} catch (error) {
 			throw error;
 		}
